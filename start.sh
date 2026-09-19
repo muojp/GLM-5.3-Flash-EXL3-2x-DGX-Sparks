@@ -440,7 +440,10 @@ HF_CACHE_DIR="${HF_HOME:-$HOME/.cache/huggingface}"
 MODEL_PATH="$HF_CACHE_DIR/hub/$MODEL_CACHE_NAME"
 FALLBACK_MODEL_PATH="$HF_CACHE_DIR/hub/$MODEL_FALLBACK_CACHE_NAME"
 DFLASH_PATH="$HF_CACHE_DIR/hub/$DFLASH_CACHE_NAME"
-WORKER_CACHE_DIR="$WORKER_HOME/.cache/huggingface"
+# The worker's HF cache. Hard-coding ~/.cache/huggingface fails on a node where that directory is
+# root-owned from an earlier sudo/docker prepare: the preflight refuses, and the only way out was to
+# chown root state. WORKER_HF_HOME (or HF_HOME, which the head already honours) points it elsewhere.
+WORKER_CACHE_DIR="${WORKER_HF_HOME:-${HF_HOME:-$WORKER_HOME/.cache/huggingface}}"
 CACHE_ROOT="${CACHE_ROOT:-$HOME/.cache/vllm-glm53-flash}"
 WORKER_VLLM_CACHE="${WORKER_VLLM_CACHE:-$WORKER_HOME/.cache/vllm-glm53-flash}"
 # Overlay FS ~/.triton and ~/.tilelang die on container recreate (TP=2 JIT
